@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="meta">
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+<title>Blog</title>
+</head>
+<body>
+  <div th:fragment="header">
+    <table>
+      <tr>
+        <td>トップへ戻る</td>
+        <td>
+          <form th:action="@{header}" method="POST">
+            <input type="submit" name="write" value="記事を書く" />
+            <input type="submit" name="login" value="ログイン / 登録" />
+          </form>
+        </td>
+        <td>設定</td>
+      </tr>
+    </table>
+  </div>
+
+  <div th:fragment="footer">
+    <p>©irie</p>
+  </div>
+</body>
+</html>

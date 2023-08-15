@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="/parts/fragments::meta">
+</head>
+<body>
+  <form th:action="@{login}" th:object="${loginForm}" method="post">
+    <dl>
+      <dd>
+        <label for="user_id">ログインID</label>
+        <input type="text" id="user_id" name="user_id" th:field="*{user_id}" th:errorclass="error-input" placeholder="ログインID" value="abc" />
+        <span th:if="${#fields.hasErrors('user_id')}" th:errors="*{user_id}" class="error-messages">error!!</span>
+      </dd>
+      <dd>
+        <label for="login_password">ログインパスワード</label>
+        <input type="text" id="login_password" name="login_password" th:field="*{login_password}" th:errorclass="error-input" placeholder="ログインパスワード" value="abc" />
+        <span th:if="${#fields.hasErrors('login_password')}" th:errors="*{login_password}" class="error-messages">error!!</span>
+      </dd>
+    </dl>
+    <input type="submit" name="login" value="ログイン" />
+  </form>
+</body>
+</html>

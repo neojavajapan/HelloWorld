@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="/parts/fragments::meta">
+</head>
+<body>
+  <form th:action="@{create}" th:object="${blogForm}" method="post">
+    <dl>
+      <dd>
+        <label for="title">記事のタイトル</label>
+        <input type="text" id="title" name="title" th:field="*{title}" th:errorclass="error-input" placeholder="記事のタイトルを入力してください" value="aaa" />
+        <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-messages">error!</span>
+      </dd>
+      <dd>
+        <textarea id="content" name="content" th:field="*{content}" th::errorclass="error-input" placeholder="記事の本文を入力してください" /></textarea>
+        <span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error-messages">error!</span>
+      </dd>
+    </dl>
+    <span th:if="${#strings.isEmpty(blogForm.title) == false}">
+      <input type="submit" name="edit" value="完了" />
+      <input type="submit" name="delete" value="削除" />
+      <input type="hidden" name="id" th:value="${blogForm.id}" />
+    </span>
+    <span th:if="${#strings.isEmpty(blogForm.title)}">
+      <input type="submit" name="commit" value="作成" />
+    </span>
+    <input type="submit" name="back" value="戻る" />
+  </form>
+</body>
+</html>
