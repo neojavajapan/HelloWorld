@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" />
+<title>SignupInput</title>
+</head>
+<body>
+  <h1>ユーザー登録</h1>
+  <p>登録するユーザーID・ログインパスワード・ユーザー名を入力してください。</p>
+  <form th:action="@{signUp}" th:object="${signUpForm}" method="post">
+    <dl>
+      <dd>
+        <label for="user_id">ユーザーIDを数字でご入力ください。</label>
+        <input type="text" id="user_id" name="user_id" th:field="*{user_id}" th:errorclass="error-input" placeholder="ログインID" value="abc" />
+        <span th:if="${#fields.hasErrors('user_id')}" th:errors="*{user_id}" class="error-messages">error!!</span>
+      </dd>
+      <dd>
+        <label for="login_password">ログインパスワードを英数字でご入力ください。</label>
+        <input type="text" id="login_password" name="login_password" th:field="*{login_password}" th:errorclass="error-input" placeholder="ログインパスワード" value="abc" />
+        <span th:if="${#fields.hasErrors('login_password')}" th:errors="*{login_password}" class="error-messages">error!!</span>
+      </dd>
+      <dd>
+        <label for="user_name">ユーザー名</label>
+        <input type="text" id="user_name" name="user_name" th:field="*{user_name}" th:errorclass="error-input" placeholder="ユーザー名" value="abc" />
+        <span th:if="${#fields.hasErrors('user_name')}" th:errors="*{user_name}" class="error-messages">error!!</span>
+      </dd>
+    </dl>
+    <input type="submit" name="signUp" value="登録" />
+    <input type="submit" name="back" value="トップへ戻る" />
+  </form>
+</body>
+</html>

@@ -16,18 +16,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.domain.BlogContent;
 import com.example.demo.domain.User;
+import com.example.demo.mapping.FormMapping;
 import com.example.demo.service.BlogService;
 import com.example.demo.service.LoginService;
+import com.example.demo.service.SignUpService;
 import com.example.demo.web.BlogForm;
 import com.example.demo.web.LoginForm;
+import com.example.demo.web.SignUpForm;
 
 @Controller
 public class MainController {
+    @Autowired
+    FormMapping formMapping;
+
     @Autowired
     BlogService blogService;
 
     @Autowired
     LoginService loginService;
+
+    @Autowired
+    SignUpService signUpService;
 
     @ModelAttribute
     BlogForm setUpBlogForm() {
@@ -37,6 +46,11 @@ public class MainController {
     @ModelAttribute
     LoginForm setUpLoginForm() {
 	return new LoginForm();
+    }
+
+    @ModelAttribute
+    SignUpForm setSignUpForm() {
+	return new SignUpForm();
     }
 
     @RequestMapping("/")
@@ -114,6 +128,29 @@ public class MainController {
 	    model.addAttribute(model);
 	    return "login";
 	}
+    }
+
+    @RequestMapping(path = "login", params = "signUp")
+    String goSignup() {
+	return "signUpInput";
+    }
+
+    @RequestMapping(path = "signUp", params = "signUp")
+    String signUp(@Validated SignUpForm form, BindingResult result, Model model) {
+	if (result.hasErrors()) {
+	    model.addAttribute(model);
+	    return "signUpInput";
+	}
+	// マッピング処理を行います。
+	User user = new User();
+	user = formMapping.userMapping(user, form);
+	int serviceResult = signUpService.execute(user);
+	if (serviceResult == 1) {
+	    System.out.println("入力されたユーザーIDは既に使用されています。");
+	    model.addAttribute(model);
+	    return "signUpInput";
+	}
+	return "signUpComp";
     }
 
 }
