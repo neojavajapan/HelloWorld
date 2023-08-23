@@ -1,11 +1,11 @@
 package com.example.demo.mapping;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.example.demo.domain.User;
 import com.example.demo.web.SignUpForm;
 
-@Service
+@Component
 public class FormMapping {
     public User userMapping(User target, SignUpForm signUpForm) {
 	target.setUser_id(signUpForm.getUser_id());

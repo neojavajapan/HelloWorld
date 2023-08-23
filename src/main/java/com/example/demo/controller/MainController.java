@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.domain.BlogContent;
 import com.example.demo.domain.User;
 import com.example.demo.mapping.FormMapping;
+import com.example.demo.repository.BlogRepository;
 import com.example.demo.service.BlogService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.SignUpService;
+import com.example.demo.sessionBeans.UserBean;
 import com.example.demo.web.BlogForm;
 import com.example.demo.web.LoginForm;
 import com.example.demo.web.SignUpForm;
@@ -30,6 +32,9 @@ public class MainController {
     FormMapping formMapping;
 
     @Autowired
+    UserBean userBean;
+
+    @Autowired
     BlogService blogService;
 
     @Autowired
@@ -37,6 +42,9 @@ public class MainController {
 
     @Autowired
     SignUpService signUpService;
+
+    @Autowired
+    BlogRepository blogRepository;
 
     @ModelAttribute
     BlogForm setUpBlogForm() {
@@ -87,6 +95,12 @@ public class MainController {
 	return "login";
     }
 
+    @RequestMapping(path = "signUpComp")
+    String goMyPageTop(Model model) {
+	model.addAttribute(userBean);
+	return "MyPageTop";
+    }
+
     @RequestMapping(path = "edit")
     String edit(@RequestParam Integer id, Model model) {
 	Optional<BlogContent> blogContent = blogService.findById(id);
@@ -122,8 +136,13 @@ public class MainController {
 	}
 	Optional<User> user = loginService.findById(form.getUser_id());
 	if (user.isPresent()) {
-	    user.stream().forEach(x -> model.addAttribute("user", x));
-	    return "success";
+	    user.stream().forEach(x -> {
+		userBean.setUser(x);
+		userBean.setBlogContent(blogRepository.findByUserId(x.getUser_id()));
+		model.addAttribute(userBean);
+		model.addAttribute("blogContents", blogService.findByUserId(x.getUser_id()));
+	    });
+	    return "MyPageTop";
 	} else {
 	    model.addAttribute(model);
 	    return "login";
@@ -150,6 +169,8 @@ public class MainController {
 	    model.addAttribute(model);
 	    return "signUpInput";
 	}
+	System.out.println(userBean.getBlogContent());
+
 	return "signUpComp";
     }
 

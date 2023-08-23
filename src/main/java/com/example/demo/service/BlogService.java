@@ -38,4 +38,8 @@ public class BlogService {
 	blogRepository.deleteById(id);
     }
 
+    public List<BlogContent> findByUserId(int user_id) {
+	return blogRepository.findByUserId(user_id);
+    }
+
 }

@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.User;
+import com.example.demo.repository.BlogRepository;
 import com.example.demo.repository.SignUpRepository;
+import com.example.demo.sessionBeans.UserBean;
 
 import jakarta.transaction.Transactional;
 
@@ -15,6 +17,10 @@ import jakarta.transaction.Transactional;
 public class SignUpService {
     @Autowired
     SignUpRepository signUpRepository;
+    @Autowired
+    BlogRepository blogRepository;
+    @Autowired
+    UserBean userBean;
 
     // 実行結果変数
     int serviceResult;
@@ -29,8 +35,9 @@ public class SignUpService {
 	    serviceResult = 1;
 	} else {
 	    // 未使用なら登録
-
 	    signUpRepository.save(user);
+	    userBean.setUser(user);
+	    userBean.setBlogContent(blogRepository.findByUserId(user.getUser_id()));
 	}
 	return serviceResult;
     }
