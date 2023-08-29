@@ -186,6 +186,11 @@ public class MainController {
 	return "signUpInput";
     }
 
+    @RequestMapping(path = "login", params = "back")
+    String loginBack(Model model) {
+	return pageTop(model);
+    }
+
     @RequestMapping(path = "signUp", params = "signUp")
     String signUp(@Validated SignUpForm form, BindingResult result, Model model) {
 	if (result.hasErrors()) {
@@ -201,7 +206,6 @@ public class MainController {
 	    model.addAttribute(model);
 	    return "signUpInput";
 	}
-	System.out.println(userBean.getBlogContent());
 
 	return "signUpComp";
     }
