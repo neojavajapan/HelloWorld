@@ -3,6 +3,19 @@
 <head th:replace="/parts/fragments::meta">
 </head>
 <body>
+  <div>
+    <table>
+      <tr>
+        <td>
+          <form th:action="@{header}" method="POST">
+            <input type="submit" name="goTop" value="トップへ戻る" />
+            <input type="submit" name="write" value="記事を書く" />
+            <input type="submit" name="logout" value="ログアウト" />
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
   <h1>MyPageTop</h1>
   <div class="contents">
     <table>
@@ -20,6 +33,7 @@
             <input type="submit" name="edit" value="編集" />
             <input type="hidden" name="id" th:value="${blogContent.id}" />
           </form>
+        </td>
       </tr>
     </table>
   </div>

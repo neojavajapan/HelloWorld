@@ -9,11 +9,15 @@
   <div>
     <table>
       <tr>
-        <td>トップへ戻る</td>
         <td>
           <form th:action="@{header}" method="POST">
-            <input type="submit" name="write" value="記事を書く" />
-            <input type="submit" name="login" value="ログイン / 登録" />
+            <input type="submit" name="goTop" value="トップへ戻る" />
+            <span th:if="${!#strings.isEmpty(userBean.user)}">
+              <input type="submit" name="goMyPageTop" value="マイページへ" />
+            </span>
+            <span th:if="${#strings.isEmpty(userBean.user)}">
+              <input type="submit" name="login" value="ログイン / 登録" />
+            </span>
           </form>
         </td>
       </tr>
@@ -31,11 +35,6 @@
         <td th:text="${#dates.format(blogContent.update_time, 'yyyy/MM/dd')}">001</td>
         <td th:text="${blogContent.title}">abc</td>
         <td th:text="${blogContent.content}">aaaaa</td>
-        <td>
-          <form th:action="@{edit}" method="post">
-            <input type="submit" name="edit" value="編集" />
-            <input type="hidden" name="id" th:value="${blogContent.id}" />
-          </form>
       </tr>
     </table>
   </div>

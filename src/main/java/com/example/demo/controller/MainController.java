@@ -26,8 +26,13 @@ import com.example.demo.web.BlogForm;
 import com.example.demo.web.LoginForm;
 import com.example.demo.web.SignUpForm;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 public class MainController {
+    @Autowired
+    HttpSession session;
+
     @Autowired
     FormMapping formMapping;
 
@@ -65,28 +70,33 @@ public class MainController {
     String pageTop(Model model) {
 	List<BlogContent> blogContents = blogService.findAll();
 	model.addAttribute("blogContents", blogContents);
+	model.addAttribute(userBean);
 	return "pageTop";
     }
 
     @RequestMapping(path = "create", params = "commit", method = RequestMethod.POST)
-    String create(@Validated BlogForm form, BindingResult result, Model model) {
+    String create(@RequestParam Integer user_id, @Validated BlogForm form, BindingResult result, Model model) {
 	if (result.hasErrors()) {
 	    model.addAttribute(model);
+	    model.addAttribute(userBean);
 	    return "createBlog";
 	}
 	BlogContent blogContent = new BlogContent();
 	BeanUtils.copyProperties(form, blogContent);
+	blogContent.setUser_id(user_id);
 	blogService.create(blogContent);
-	return "redirect:/";
+	userBean.setBlogContent(blogService.findByUserId(user_id));
+	return goMyPageTopFromPageTop(model);
     }
 
     @RequestMapping(path = "create", params = "back")
-    String back() {
-	return "redirect:/";
+    String back(Model model) {
+	return goMyPageTopFromPageTop(model);
     }
 
     @RequestMapping(path = "header", params = "write")
-    String goEdit() {
+    String goEdit(Model model) {
+	model.addAttribute(userBean);
 	return "createBlog";
     }
 
@@ -95,8 +105,25 @@ public class MainController {
 	return "login";
     }
 
+    @RequestMapping(path = "header", params = "goTop")
+    String goTop() {
+	return "redirect:/";
+    }
+
+    @RequestMapping(path = "header", params = "logout")
+    String goLogout() {
+	session.invalidate();
+	return "logout";
+    }
+
+    @RequestMapping(path = "header", params = "goMyPageTop")
+    String goMyPageTopFromPageTop(Model model) {
+	model.addAttribute(userBean);
+	return "MyPageTop";
+    }
+
     @RequestMapping(path = "signUpComp")
-    String goMyPageTop(Model model) {
+    String goMyPageTopFromsignUpComp(Model model) {
 	model.addAttribute(userBean);
 	return "MyPageTop";
     }
@@ -107,25 +134,30 @@ public class MainController {
 	blogContent.ifPresent(x -> {
 	    model.addAttribute("blogForm", x);
 	});
+	model.addAttribute(userBean);
 	return "createBlog";
     }
 
     @RequestMapping(path = "create", params = "edit")
-    String edit(@Validated BlogForm form, @RequestParam Integer id, BindingResult result, Model model) {
+    String edit(@Validated BlogForm form, @RequestParam Integer id, @RequestParam Integer user_id, BindingResult result,
+	    Model model) {
 	if (result.hasErrors()) {
 	    model.addAttribute(model);
 	    return "createBlog";
 	}
 	BlogContent blogContent = new BlogContent();
 	BeanUtils.copyProperties(form, blogContent);
+	blogContent.setUser_id(user_id);
 	blogService.update(blogContent);
-	return "redirect:/";
+	userBean.setBlogContent(blogService.findByUserId(user_id));
+	return goMyPageTopFromPageTop(model);
     }
 
     @RequestMapping(path = "create", params = "delete")
-    String delete(BlogForm form, @RequestParam Integer id, Model model) {
+    String delete(BlogForm form, @RequestParam Integer id, @RequestParam Integer user_id, Model model) {
 	blogService.delete(id);
-	return "redirect:/";
+	userBean.setBlogContent(blogService.findByUserId(user_id));
+	return goMyPageTopFromPageTop(model);
     }
 
     @RequestMapping(path = "login", params = "login")
@@ -172,6 +204,12 @@ public class MainController {
 	System.out.println(userBean.getBlogContent());
 
 	return "signUpComp";
+    }
+
+    @RequestMapping(path = "signUp", params = "back")
+    String signUpBack(Model model) {
+	model.addAttribute(userBean);
+	return "redirect:/";
     }
 
 }
