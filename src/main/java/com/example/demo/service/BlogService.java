@@ -38,8 +38,12 @@ public class BlogService {
 	blogRepository.deleteById(id);
     }
 
-    public List<BlogContent> findByUserId(int user_id) {
-	return blogRepository.findByUserId(user_id);
+    public List<BlogContent> findByUserIdSortedByLatest(int user_id) {
+	return blogRepository.findByUserIdSortedByLatest(user_id);
+    }
+
+    public List<BlogContent> findAllSortedByLatest() {
+	return blogRepository.findAllSortedByLatest();
     }
 
 }

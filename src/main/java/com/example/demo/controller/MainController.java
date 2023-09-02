@@ -18,6 +18,7 @@ import com.example.demo.domain.BlogContent;
 import com.example.demo.domain.User;
 import com.example.demo.mapping.FormMapping;
 import com.example.demo.repository.BlogRepository;
+import com.example.demo.service.BlogContentSortService;
 import com.example.demo.service.BlogService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.SignUpService;
@@ -49,6 +50,9 @@ public class MainController {
     SignUpService signUpService;
 
     @Autowired
+    BlogContentSortService blogContentSortService;
+
+    @Autowired
     BlogRepository blogRepository;
 
     @ModelAttribute
@@ -68,7 +72,7 @@ public class MainController {
 
     @RequestMapping("/")
     String pageTop(Model model) {
-	List<BlogContent> blogContents = blogService.findAll();
+	List<BlogContent> blogContents = blogService.findAllSortedByLatest();
 	model.addAttribute("blogContents", blogContents);
 	model.addAttribute(userBean);
 	return "pageTop";
@@ -85,7 +89,7 @@ public class MainController {
 	BeanUtils.copyProperties(form, blogContent);
 	blogContent.setUser_id(user_id);
 	blogService.create(blogContent);
-	userBean.setBlogContent(blogService.findByUserId(user_id));
+	userBean.setBlogContent(blogService.findByUserIdSortedByLatest(user_id));
 	return goMyPageTopFromPageTop(model);
     }
 
@@ -149,14 +153,14 @@ public class MainController {
 	BeanUtils.copyProperties(form, blogContent);
 	blogContent.setUser_id(user_id);
 	blogService.update(blogContent);
-	userBean.setBlogContent(blogService.findByUserId(user_id));
+	userBean.setBlogContent(blogService.findByUserIdSortedByLatest(user_id));
 	return goMyPageTopFromPageTop(model);
     }
 
     @RequestMapping(path = "create", params = "delete")
     String delete(BlogForm form, @RequestParam Integer id, @RequestParam Integer user_id, Model model) {
 	blogService.delete(id);
-	userBean.setBlogContent(blogService.findByUserId(user_id));
+	userBean.setBlogContent(blogService.findByUserIdSortedByLatest(user_id));
 	return goMyPageTopFromPageTop(model);
     }
 
@@ -170,9 +174,8 @@ public class MainController {
 	if (user.isPresent()) {
 	    user.stream().forEach(x -> {
 		userBean.setUser(x);
-		userBean.setBlogContent(blogRepository.findByUserId(x.getUser_id()));
+		userBean.setBlogContent(blogRepository.findByUserIdSortedByLatest(x.getUser_id()));
 		model.addAttribute(userBean);
-		model.addAttribute("blogContents", blogService.findByUserId(x.getUser_id()));
 	    });
 	    return "MyPageTop";
 	} else {
@@ -214,6 +217,27 @@ public class MainController {
     String signUpBack(Model model) {
 	model.addAttribute(userBean);
 	return "redirect:/";
+    }
+
+    @RequestMapping(path = "sort")
+    String sort(@RequestParam String sortInput, Model model) {
+	List<BlogContent> blogContents = blogContentSortService.execute(sortInput);
+	model.addAttribute("blogContents", blogContents);
+	model.addAttribute(userBean);
+	model.addAttribute("sortInput", sortInput);
+	return "pageTop";
+
+    }
+
+    @RequestMapping(path = "sortFromMyPageTop")
+    String sortFromMyPageTop(@RequestParam String sortInput, Model model) {
+	List<BlogContent> blogContents = blogContentSortService.executeFromMyPageTop(sortInput,
+		userBean.getUser().getUser_id());
+	userBean.setBlogContent(blogContents);
+	model.addAttribute(userBean);
+	model.addAttribute("sortInput", sortInput);
+	return "MyPageTop";
+
     }
 
 }
